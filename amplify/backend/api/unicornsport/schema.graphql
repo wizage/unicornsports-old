@@ -1,0 +1,8 @@
+type Channel @model {
+  channelID: ID!
+  title: String!
+  description: String!
+  streamKey: String  @function(name: "channelManager-${env}")
+  channelArn: String
+  streamURL: String
+}

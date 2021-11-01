@@ -1,0 +1,31 @@
+.slide-button {
+	position: relative;
+	/* width: 55px; */
+	background: rgba(255, 255, 255, 0.5);
+	border: 0;
+	outline: 0;
+  	z-index: 4;
+	height: 225px;
+	top: 5%;
+}
+
+.slide-button span {
+	width: 25px;
+	color: #fff;
+	display: block;
+	margin: 0 auto;
+}
+
+.slide-button--next span {
+	transform: rotateZ(-90deg);
+}
+
+.slide-button--prev {
+	left: -50%;
+}
+.slide-button--next {
+	right: -50%;
+}
+.slide-button--prev span {
+	transform: rotateZ(90deg);
+}
