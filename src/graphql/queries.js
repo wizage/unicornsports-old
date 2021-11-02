@@ -13,6 +13,7 @@ export const getChannel = /* GraphQL */ `
       streamURL
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -28,8 +29,43 @@ export const listChannels = /* GraphQL */ `
         channelID
         title
         description
+        streamKey
+        channelArn
+        streamURL
         createdAt
         updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const channelByArn = /* GraphQL */ `
+  query ChannelByArn(
+    $channelArn: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelChannelFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    channelByArn(
+      channelArn: $channelArn
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        channelID
+        title
+        description
+        streamKey
+        channelArn
+        streamURL
+        createdAt
+        updatedAt
+        owner
       }
       nextToken
     }

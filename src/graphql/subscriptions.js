@@ -13,6 +13,7 @@ export const onCreateChannel = /* GraphQL */ `
       streamURL
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -28,6 +29,7 @@ export const onUpdateChannel = /* GraphQL */ `
       streamURL
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -43,6 +45,7 @@ export const onDeleteChannel = /* GraphQL */ `
       streamURL
       createdAt
       updatedAt
+      owner
     }
   }
 `;
