@@ -11,6 +11,6 @@ type Channel @model
 }
 
 type Mutation {
-  rotateStreamKey(channelID: ID): Channel @function(name: "channelManager-${env}") @auth(rules: [{allow: owner}])
+  createStreamKey(channelID: ID): Channel @function(name: "channelManager-${env}") @auth(rules: [{allow: owner}])
 }
 
