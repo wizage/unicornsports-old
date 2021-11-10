@@ -8,6 +8,8 @@ type Channel @model
   streamKey: String @auth(rules: [{allow: owner}])
   channelArn: String @auth(rules: [{allow: owner}])
   streamURL: String
+  viewerCount: Int
+  liveStatus: Boolean
 }
 
 type Mutation {
