@@ -10,17 +10,26 @@ class Video extends Component {
   componentDidMount() {
     const { src, parentCallback } = this.props;
     window.registerIVSTech(videojs);
+    window.registerIVSQualityPlugin(videojs); // where videojs is the video.js variable
     this.player = videojs(this.videoNode, this.props);
     this.player.src(src);
-    this.player.enableTwitchPlugins();
-    const TwitchTech = this.player.getTwitchTech();
-    this.player.addTwitchTechEventListener(TwitchTech.PlayerEvent.METADATA, (metadata) => {
-      if (metadata.data.constructor === ArrayBuffer) {
-        const enc = new TextDecoder('utf-8');
-        parentCallback(enc.decode(metadata.data));
-        // console.info(enc.decode(metadata.data));
-      }
+    this.player.enableIVSQualityPlugin(); // where player is the instance of the videojs player
+    const PlayerState = this.player.getIVSEvents().PlayerState;
+    const PlayerEventType = this.player.getIVSEvents().PlayerEventType;
+    this.player.getIVSPlayer().addEventListener(PlayerEventType.TEXT_METADATA_CUE, (metadata) => {
+      console.log(metadata.text)
     });
+    this.player.getIVSPlayer().addEventListener(PlayerState.PLAYING, () => {
+      console.log("Player State - PLAYING");
+      setTimeout(() => {
+          console.log(
+              `This stream is ${
+                  this.player.getIVSPlayer().isLiveLowLatency() ? "" : "not "
+              }playing in ultra low latency mode`
+          );
+          console.log(`Stream Latency: ${this.player.getIVSPlayer().getLiveLatency()}s`);
+      }, 5000);
+  });
   }
 
   componentWillUnmount() {
