@@ -6,7 +6,7 @@ import { FlexboxGrid, Avatar, Tag, TagGroup } from 'rsuite';
 
 import Video from '../Video';
 import NavBar from '../NavBar';
-import * as queries from '../../graphql/queries';
+import { getChannel } from '../../graphql/queries';
 import './index.css';
 
 class Channel extends Component {
@@ -14,46 +14,59 @@ class Channel extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          title: 'Hello World - We out here streaming',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Morbi leo urna molestie at elementum eu. Quam lacus suspendisse faucibus interdum posuere. Diam sollicitudin tempor id eu. Auctor urna nunc id cursus metus aliquam eleifend mi in. Ut pharetra sit amet aliquam id diam. Penatibus et magnis dis parturient montes nascetur ridiculus. Aenean et tortor at risus. Commodo elit at imperdiet dui accumsan. Convallis tellus id interdum velit laoreet id donec. Lectus magna fringilla urna porttitor rhoncus dolor purus non enim. Consequat ac felis donec et. Tellus integer feugiat scelerisque varius morbi enim. Nunc faucibus a pellentesque sit amet porttitor eget dolor. Et netus et malesuada fames ac.',
-          tags: ['english', 'football', 'soccer'],
+            item: {
+            }
         };
       }
 
-    componentDidMount() {
+      componentDidMount() {
         const { name } = this.props;
         const input = {
-            channelID: name
+            id: name,
         };
-        API.graphql(graphqlOperation(queries.getChannel, input)).then((results) => {
-            this.setState({ item: results.data.getChannel });
+
+        API.graphql(graphqlOperation( getChannel, input)).then((results) => {
+            this.setState({ item: results.data.getChannel } );
         }).catch((e) => {
-            console.log(`Error with returning, ${e} `);
+            console.log("Can't find channel");
         });
     }
 
     tags = () => {
-        const { tags } = this.state;
-        const tagHTML = tags.map((item) => (
+        const { item } = this.state;
+        // Harded coded for now 
+        item.tags =  ['english', 'livestream', 'coding'];
+        const tagHTML = item.tags.map((item) => (
             <Tag>{item}</Tag>
         ));
         return tagHTML;
     }
 
+    drawVideoPlayer = () => {
+        const { item } = this.state;
+        if (item.streamURL) {
+            return (
+            <Video 
+                src={item.streamURL}
+                techOrder={['AmazonIVS']}
+                controls
+                />
+            );
+        } else {
+            return (<div></div>);
+        }
+    }
+
 
     render() {
         const { name } = this.props;
-        const { title, description } = this.state;
+        const { item } = this.state;
         const profile = {name:name};
         return (
         <div className="">
             <NavBar profile={profile}/>
             <div className="videoPlayer">
-                <Video 
-                src={"https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.xhP3ExfcX8ON.m3u8"}
-                techOrder={['AmazonIVS']}
-                controls
-                />
+                {this.drawVideoPlayer()}
                 <FlexboxGrid>
                     <FlexboxGrid.Item colspan={1}>
                         <div className="avatar">
@@ -65,7 +78,7 @@ class Channel extends Component {
                             {name}
                         </div>
                         <div className="title">
-                            {title}
+                            {item.title}
                         </div>
                     </FlexboxGrid.Item>
                     <FlexboxGrid.Item colspan={16}>
@@ -82,7 +95,7 @@ class Channel extends Component {
                 <FlexboxGrid>
                     <FlexboxGrid.Item colspan={12}>
                         <div className="desc">
-                            {description}
+                            {item.description}
                         </div>
                     </FlexboxGrid.Item>
                     <FlexboxGrid.Item colspan={8}>

@@ -2,15 +2,17 @@ type Channel @model
 @auth(rules: [{ allow: owner, operations: [create, delete, update] }])
 @key(name: "channelsByArn", fields: ["channelArn"], queryField: "channelByArn")
 {
-  channelID: ID!
+  id: ID!
   title: String!
   description: String!
   streamKey: String @auth(rules: [{allow: owner}])
   channelArn: String @auth(rules: [{allow: owner}])
   streamURL: String
+  streamKeyArn: String @auth(rules: [{allow: owner}])
+  ingestEndpoint: String @auth(rules: [{allow: owner}])
 }
 
 type Mutation {
-  createStreamKey(channelID: ID): Channel @function(name: "channelManager-${env}") @auth(rules: [{allow: owner}])
+  createStreamKey(id: ID): Channel @function(name: "channelManager-${env}") @auth(rules: [{allow: owner}])
 }
 

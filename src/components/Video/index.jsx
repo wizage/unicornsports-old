@@ -7,6 +7,7 @@ import 'video.js/dist/video-js.css';
 import './index.css';
 
 class Video extends Component {
+  
   componentDidMount() {
     const { src, parentCallback } = this.props;
     window.registerIVSTech(videojs);

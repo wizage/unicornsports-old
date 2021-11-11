@@ -5,12 +5,13 @@ export const onCreateChannel = /* GraphQL */ `
   subscription OnCreateChannel {
     onCreateChannel {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner
@@ -21,12 +22,13 @@ export const onUpdateChannel = /* GraphQL */ `
   subscription OnUpdateChannel {
     onUpdateChannel {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner
@@ -37,12 +39,13 @@ export const onDeleteChannel = /* GraphQL */ `
   subscription OnDeleteChannel {
     onDeleteChannel {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner

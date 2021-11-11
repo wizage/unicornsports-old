@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Amplify from 'aws-amplify';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import 'rsuite/dist/rsuite.min.css';
 import Routing from './components/Router';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
 
 ReactDOM.render(
-  Routing,
+  <Routing />,
   document.getElementById('root')
 );
 

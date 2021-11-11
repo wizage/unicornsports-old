@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import './index.css';
 import GridCardView from '../GridCardView';
 import SlideButton from '../SlideButtons';
@@ -7,7 +8,7 @@ import SlideButton from '../SlideButtons';
 import {
   API, graphqlOperation,
 } from 'aws-amplify';
-import * as queries from '../../graphql/queries';
+import { listChannels } from '../../graphql/queries'
 // Location9>>
 
 class CarouselView extends Component {
@@ -16,19 +17,7 @@ class CarouselView extends Component {
     this.state = {
       choosenItem: {},
       sources: [],
-      items: [{
-        id: 'test',
-        title: 'word'
-      },
-      {
-        id: 'test2',
-        title: 'word'
-      },
-      {
-        id: 'test3',
-        title: 'word'
-      }
-    ],
+      items: [],
       activeItemIndex: 0,
       slideDistance: -75,
       username: props.username,
@@ -46,8 +35,12 @@ class CarouselView extends Component {
   componentDidMount() {
     const { width } = this.useSizeElement();
     const input = {};
-    API.graphql(graphqlOperation(queries.listChannels, input)).then((results) => {
-      this.setState({ items: results.data.listChannels.items, width });
+    API.graphql(graphqlOperation(listChannels, input)).then((results) => {
+      let slideDistance = 0;
+      if (width > 300 && results.data.listChannels.items.length < 5) {
+        slideDistance = 300;
+      }
+      this.setState({ items: results.data.listChannels.items, width, slideDistance});
     }).catch((e) => {
       console.log(`Error with returning, ${e} `);
     });
@@ -84,18 +77,14 @@ class CarouselView extends Component {
     }
   }
 
-  displayMovie = async (itemId) => {
+  displayMovie = (itemId) => {
     //Handle Click
-  }
-
-  clearItem = () => {
-    // Undo Click
   }
 
   drawTitle = () => {
     return (
       <h3 className="carouselTitle">
-        Generic Shelf
+        Live right now!
       </h3>
     );
   }
@@ -110,15 +99,14 @@ class CarouselView extends Component {
       transform: `translate3d(${slideDistance}px, 0, 0)`,
     };
     const itemHTML = items.map((item) => (
-      <button type="button" className="carouselCard" onClick={(e) => this.displayMovie(item.id, e)} aria-label={item.title} key={item.id}><GridCardView item={item} /></button>
+      <Link className="carouselCard" to={`/${item.id}`} aria-label={item.title} key={item.id}><GridCardView item={item} /></Link>
     ));
-    if (items.length < 2) {
+    if (items.length < 1) {
       return (<div ref={this.viewRef} />);
     }
     return (
       <div ref={this.viewRef}>
         <div className="carouselFrame">
-
           {this.drawTitle()}
           <SlideButton onClick={this.handlePrev} type="prev" width={width} />
           <SlideButton onClick={this.handleNext} type="next" width={width} />
