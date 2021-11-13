@@ -23,6 +23,9 @@
     "apiunicornsportGraphQLAPIEndpointOutput": {
       "Type": "String",
       "Default": "apiunicornsportGraphQLAPIEndpointOutput"
+    },
+    "pushVersion": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -83,6 +86,9 @@
             },
             "API_UNICORNSPORT_GRAPHQLAPIENDPOINTOUTPUT": {
               "Ref": "apiunicornsportGraphQLAPIEndpointOutput"
+            },
+            "PUSH_VERSION": {
+              "Ref": "pushVersion"
             }
           }
         },
@@ -265,6 +271,43 @@
           ]
         }
       }
+    },
+    "CustomLambdaExecutionPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "custom-lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "ivs:CreateChannel",
+                "ivs:ListChannels",
+                "ivs:GetChannel",
+                "ivs:ListStreamKeys",
+                "ivs:GetStreamKey",
+                "ivs:GetStream",
+                "ivs:ListStreams",
+                "ivs:CreateRecordingConfiguration",
+                "ivs:GetRecordingConfiguration",
+                "ivs:ListRecordingConfigurations"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ]
     }
   },
   "Outputs": {

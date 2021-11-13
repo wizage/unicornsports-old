@@ -1,6 +1,15 @@
 [
   {
-    "Action": [],
-    "Resource": []
+    "Action": ["ivs:CreateChannel",
+            "ivs:ListChannels",
+            "ivs:GetChannel",
+            "ivs:ListStreamKeys",
+            "ivs:GetStreamKey",
+            "ivs:GetStream",
+            "ivs:ListStreams",
+            "ivs:CreateRecordingConfiguration",
+            "ivs:GetRecordingConfiguration",
+            "ivs:ListRecordingConfigurations"],
+    "Resource": ["*"]
   }
 ]
