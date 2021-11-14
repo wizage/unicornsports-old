@@ -25,7 +25,7 @@ class Channel extends Component {
             id: name,
         };
 
-        API.graphql(graphqlOperation( getChannel, input)).then((results) => {
+        API.graphql(graphqlOperation( getPublicChannel, input)).then((results) => {
             this.setState({ item: results.data.getChannel } );
         }).catch((e) => {
             console.log("Can't find channel");
@@ -114,3 +114,18 @@ class Channel extends Component {
 
 
 export default Channel;
+
+
+const getPublicChannel = /* GraphQL */ `
+  query GetChannel($id: ID!) {
+    getChannel(id: $id) {
+      id
+      title
+      description
+      streamURL
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;

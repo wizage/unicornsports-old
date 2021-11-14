@@ -5,6 +5,7 @@
     height: 15rem;
     width: 10rem;
     position: relative;
+    margin-left: 20px;
 }
 
 /* On mouse-over, add a deeper shadow 
