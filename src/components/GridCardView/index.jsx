@@ -1,9 +1,7 @@
 import React from 'react';
-import { Placeholder } from 'rsuite';
 import { Avatar } from 'rsuite';
 import './index.css';
 
-const { Paragraph } = Placeholder;
 const GridCardView = (props) => {
   const { item: { id, title } } = props;
   return (

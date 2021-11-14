@@ -28,11 +28,15 @@ class ChannelAdmin extends Component {
         Auth.currentAuthenticatedUser().then((userInfo) => {
             this.setState({user: userInfo});
         });
-        API.graphql(graphqlOperation( getChannel, input)).then((results) => {
-            this.setState({ item: results.data.getChannel, newChannel: false });
-        }).catch((e) => {
-            console.log("Can't find channel");
-        });
+        try {
+            API.graphql(graphqlOperation( getChannel, input)).then((results) => {
+                if(results.data.getChannel) {
+                    this.setState({ item: results.data.getChannel, newChannel: false });
+                }
+            });
+        } catch (e) {
+            console.log("Channel can't be found");
+        }
     }
 
     setFormValue = (formValue) => {
@@ -125,7 +129,7 @@ class ChannelAdmin extends Component {
                     </Form.Group>
                     <Form.Group controlId="ingestEndpoint">
                         <Form.ControlLabel>Ingest Endpoint</Form.ControlLabel>
-                        <Form.Control name="ingestEndpoint" readOnly value={`rtmps://${item.ingestEndpoint}:443/app/`} />
+                        <Form.Control name="ingestEndpoint" readOnly value={item.ingestEndpoint?`rtmps://${item.ingestEndpoint}:443/app/`:''} />
                         <Form.HelpText>Auto generated.</Form.HelpText>
                     </Form.Group>
                     <Form.Group controlId="streamKey">
