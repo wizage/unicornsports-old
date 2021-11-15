@@ -9,32 +9,60 @@ Amplify Params - DO NOT EDIT */
 //const AWS = require('aws-sdk');
 /* eslint-enable */
 //const ivsClient = new AWS.IVS({region: "us-west2"});
-const { IvsClient, GetStreamCommand, ListChannelsCommand } = require("@aws-sdk/client-ivs"); // ES Modules import
-const aws = require('aws-sdk')
 
-const axios = require('axios');
+//import fetch from 'node-fetch'
+
+const {
+    IvsClient,
+    GetStreamCommand,
+    ListChannelsCommand
+} = require("@aws-sdk/client-ivs"); // ES Modules import
+
+const aws = require('aws-sdk')
 const gql = require('graphql-tag');
 const graphql = require('graphql');
-const { print } = graphql;
+var aws4  = require('aws4')
+require('isomorphic-fetch')
+
+
+
+/*import {IvsClient, GetStreamCommand, ListChannelsCommand} from '@aws-sdk/client-ivs'
+import aws from 'aws-sdk'
+import gql from 'graphql-tag'
+import graphql from 'graphql'
+import aws4 from 'aws4'
+import AWSAppSyncClient from 'aws-appsync'
+import createHttpLink from 'apollo-link-http'
+//const axios = require('axios');
+
+*/
+
+const AWSAppSyncClient = require('aws-appsync').default;
+
+//const {createHttpLink} = require('apollo-link-http')
+
+const {
+    print
+} = graphql;
 
 //*****************sign-in****************
 
 const cognitoSP = new aws.CognitoIdentityServiceProvider({
-  region: 'us-west-2'
+    region: 'us-west-2'
 })
 
 
 const initiateAuthParams = {
-  AuthFlow:   "ADMIN_NO_SRP_AUTH",
-  ClientId:   '748ashtc1g6qcrq5cpf4tjnc8u',    // use env variables or SSM parameters
-  UserPoolId: 'us-west-2_i6YTTW5z0', // use env variables or SSM parameters
-  AuthParameters: {
-    USERNAME: 'shamik',  // use env variables or SSM parameters
-    PASSWORD: 'Shamik123#',  // use env variables or SSM parameters
-  }
-};  
+    AuthFlow: "ADMIN_NO_SRP_AUTH",
+    ClientId: '748ashtc1g6qcrq5cpf4tjnc8u', // use env variables or SSM parameters
+    UserPoolId: 'us-west-2_i6YTTW5z0', // use env variables or SSM parameters
+    AuthParameters: {
+        USERNAME: 'shamik', // use env variables or SSM parameters
+        PASSWORD: 'Shamik123#', // use env variables or SSM parameters
+    }
+};
 //*****************sign-in****************
-    
+
 
 /*const GRAPHQL_ENDPOINT = "https://mmwdcbsihjf43kovagirdoa6au.appsync-api.us-west-2.amazonaws.com/graphql"
 const API_KEY = "da2-momiu3347fepze2j57dj4yw7xm"
@@ -88,161 +116,162 @@ const updateViewerCount = gql`
 /* eslint-disable */
 
 exports.handler = async (event) => {
-
+  
     const config = {
         region: "us-west-2"
     }
-    
-    getCredentials() 
-    
-    
-    const client = new IvsClient(config);
-    
-    const listChannelsInput = {}
-    const listChannelCommand = new ListChannelsCommand(listChannelsInput)
-    const listChannelResponse = await client.send(listChannelCommand)
-    //var listChannelResponseObject = JSON.parse(listChannelResponse)
-    
+
+    //console.log(creds)
+    //creds = getCredentials().then(function(result){
+
+    cognitoSP.adminInitiateAuth(initiateAuthParams, (authErr, authData) => {
+
+        console.log("the result is ")
+        console.log(authData["AuthenticationResult"]["IdToken"])
+        
+        const client = new IvsClient(config);
+        
+        const appSyncClient = new AWSAppSyncClient({
+          disableOffline: true,
+          url: GRAPHQL_ENDPOINT,
+          region: 'us-west-2',
+          auth:{
+            type: "AMAZON_COGNITO_USER_POOLS",
+            jwtToken: authData["AuthenticationResult"]["IdToken"]
+          }
+        })
+
+        const listChannelsInput = {}
+        const listChannelCommand = new ListChannelsCommand(listChannelsInput)
+        const listChannelResponse = client.send(listChannelCommand).then(function(result) {
+            //var listChannelResponseObject = JSON.parse(listChannelResponse)  
+            //console.log("abc")
+            //console.log(result)
+            
+            result["channels"].forEach(async function(channel) {
+                var arn = channel["arn"]
+
+                const params = {
+                    channelArn: arn
+                };
+
+                //console.log(arn)
+
+                const command = new GetStreamCommand(params);
+
+                var viewerCount = -1
+
+                try {
+                    const streamResponse = await client.send(command);
+                    //viewerCount = streamResponse["stream"]["viewerCount"]
+                } catch (e) {
+                    //console.log(e)
+                }
+
+                console.log(arn + " " + viewerCount)
+
+
+                try {
+
+                    console.log("create")
+                    /*
+                    const createRecordOptions = {
+                      
+                        url: GRAPHQL_ENDPOINT,
+                        method: 'post',
+                        headers: {
+                            'Authorization': 'token ' + authData["AuthenticationResult"]["AccessToken"]
+                            //'x-api-key': 'da2-jqpczszevbg5bhuqxgxn7nnycy'
+                        },
+                        data: {
+                            query: print(createViewerCount),
+                            variables: {
+                                input: {
+                                    channelArn: arn,
+                                    viewerCount: viewerCount,
+                                    title: "test-1",
+                                    description: "test-1",
+                                    channelID: 2
+                                }
+                            }
+                        }
+                      
+                    } 
+                    
+                    //const signedRecordOptions = aws4.sign(createRecordOptions, authData["AuthenticationResult"]["IdToken"])
+
+                    const createRecord = await axios(createRecordOptions);
+
+                    console.log(createRecord)
+                    */
+                    
+                    console.log(appSyncClient)
+                    await appSyncClient.hydrated();
+                    const createViewerCountRequest = await appSyncClient.mutate({
+                      mutation: createViewerCount,
+                      fetchPolicy: 'no-cache',
+                      variables: {
+                                input: {
+                                    channelArn: arn,
+                                    viewerCount: viewerCount,
+                                    title: "test-1",
+                                    description: "test-1",
+                                    channelID: 2
+                                }
+                      }
+                    })
+                    
+                    console.log(createViewerCountRequest)
+
+                } catch (e) {
+                  console.log(e)
+
+                }
+
+            })
+
+        })
+    })
+
+
+
+
     /*for(var arn in listChannelResponse["channels"]){
       console.log(arn[0])  
     }*/
-    
-    //console.log(listChannelResponse["channels"])
-    
-    //var arnList = []
-    
-    console.log(listChannelResponse["channels"].length)
-    
-    listChannelResponse["channels"].forEach(async function(channel){
-      var arn = channel["arn"]
-      
-      const params = {
-        channelArn: arn
-      };
-    
-     
-        const command = new GetStreamCommand(params);
-        //console.log(streamResponse)
-        
-        var viewerCount = -1
-        
-        try{
-          
-          const streamResponse = await client.send(command);
-          viewerCount = streamResponse["stream"]["viewerCount"]
-          
-        }catch (e){
-          //console.log(e)
-          
-        }
-        
-        
-        console.log(arn + " " + viewerCount)
-        
-        try {
-          
-          /*
-          const channelExistsGraphQlData = await axios({
-            url: GRAPHQL_ENDPOINT,
-            method: 'post',
-            headers: {
-              'x-api-key': API_KEY
-            },
-            data: {
-              query: print(getViewerCounts),
-              variables: {
-                channelArn: arn
-              }
-            }
-          });
-          
-          console.log(channelExistsGraphQlData.data)
-          
-          if(!channelExistsGraphQlData.data.data.getViewerCount){
-          */
-            console.log("create")
-            
-            const createRecord = await axios({
-            url: GRAPHQL_ENDPOINT,
-            method: 'post',
-            headers: {
-              'x-api-key': API_KEY
-            },
-            data: {
-              query: print(createViewerCount),
-              variables: {
-                input: {
-                  channelArn: arn,
-                  viewerCount: viewerCount,
-                  title: "test-1",
-                  description: "test-1",
-                  channelID : 2
-                  }
-                }
-              }
-            });
-            
-            console.log(createRecord.data)
-          /*  
-          } else {
-            console.log("update")
-            
-            const updateRecord = await axios({
-            url: GRAPHQL_ENDPOINT,
-            method: 'post',
-            headers: {
-              'x-api-key': API_KEY
-            },
-            data: {
-              query: print(updateViewerCount),
-              variables: {
-                input: {
-                  channelArn: arn,
-                  viewerCount: viewerCount
-                  }
-                }
-              }
-            });
-          }
-          */
-        } catch (err) {
-          console.log('error posting to appsync: ', err);
-        }
 
-    })
-    
-    
-  
-  const response = {
+    //console.log(listChannelResponse["channels"])
+
+    //var arnList = []
+
+    //console.log(listChannelResponse["channels"].length)
+
+
+    const response = {
         statusCode: 200,
-    //  Uncomment below to enable CORS requests
-    //  headers: {
-    //      "Access-Control-Allow-Origin": "*",
-    //      "Access-Control-Allow-Headers": "*"
-    //  }, 
+        //  Uncomment below to enable CORS requests
+        //  headers: {
+        //      "Access-Control-Allow-Origin": "*",
+        //      "Access-Control-Allow-Headers": "*"
+        //  }, 
         body: JSON.stringify('Hello from Lambda!'),
     };
     return response;
 };
 
-function getCredentials() {
-  
-  
-  
-  return new Promise((resolve, reject) => {
+async function getCredentials() {
     cognitoSP.adminInitiateAuth(initiateAuthParams, (authErr, authData) => {
-      if (authErr) {
-        console.log(authErr)
-        reject(authErr)
-      } else if (authData === null) {
-        reject("Auth data is null")
-      } else {
-        console.log("Auth Successful")
-        resolve(authData)
-      }
+        if (authErr) {
+            console.log(authErr)
+            //reject(authErr)
+        } else if (authData === null) {
+            //reject("Auth data is null")
+        } else {
+            console.log("Auth Successful")
+            console.log(authData)
+            return authData
+        }
     })
-  })
 }
-
 
 exports.handler()

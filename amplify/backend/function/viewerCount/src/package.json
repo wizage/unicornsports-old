@@ -9,7 +9,9 @@
     "graphql": "~15.7.1",
     "graphql-tag": "~2.12.5",
     "aws-sdk": "~2.1016.0",
-    "@aws-sdk/client-ivs": "~3.38.0"
+    "@aws-sdk/client-ivs": "~3.38.0",
+    "aws-appsync": "4.1.4",
+    "isomorphic-fetch" : "3.0.0"
   },
   "author": "",
   "devDependencies": {},
