@@ -25,20 +25,8 @@ require('isomorphic-fetch')
 
 
 
-/*import {IvsClient, GetStreamCommand, ListChannelsCommand} from '@aws-sdk/client-ivs'
-import aws from 'aws-sdk'
-import gql from 'graphql-tag'
-import graphql from 'graphql'
-import aws4 from 'aws4'
-import AWSAppSyncClient from 'aws-appsync'
-import createHttpLink from 'apollo-link-http'
-//const axios = require('axios');
-
-*/
-
 const AWSAppSyncClient = require('aws-appsync').default;
 
-//const {createHttpLink} = require('apollo-link-http')
 
 const {
     print
@@ -47,6 +35,7 @@ const {
 //*****************sign-in****************
 
 const cognitoSP = new aws.CognitoIdentityServiceProvider({
+    apiVersion: '2016-04-18',
     region: 'us-west-2'
 })
 
@@ -63,23 +52,12 @@ const initiateAuthParams = {
 //*****************sign-in****************
 
 
-/*const GRAPHQL_ENDPOINT = "https://mmwdcbsihjf43kovagirdoa6au.appsync-api.us-west-2.amazonaws.com/graphql"
-const API_KEY = "da2-momiu3347fepze2j57dj4yw7xm"
-const CHANNEL_ARN = "arn:aws:ivs:us-west-2:865446119418:channel/F0xJeGNpoRd7"
-*/
 
 /*Unicorn sports endpoints*/
 
 const GRAPHQL_ENDPOINT = "https://ntqa7znanbdb7fsqa4wzxv2rru.appsync-api.us-west-2.amazonaws.com/graphql"
 const API_KEY = "	da2-umt7iqnflfh35mmilgwpa2vitm"
 
-/*
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT
-const API_KEY = process.env.API_KEY
-const CHANNEL_ARN = process.env.CHANNEL_ARN
-*/
-
-//getViewerCount(channelArn: String!): viewerCount
 
 const getViewerCounts = gql `
   query channelByArn($channelArn : String!){
@@ -116,7 +94,7 @@ const updateViewerCount = gql`
 
 /* eslint-disable */
 
-exports.handler = async (event) => {
+exports.handler = async function(event) {
 
     const config = {
         region: "us-west-2"
@@ -124,114 +102,132 @@ exports.handler = async (event) => {
 
     console.log("in event handler")
     
+    const client = await new IvsClient(config);
+    
+    const listChannelsInput = {}
+                const listChannelCommand = await new ListChannelsCommand(listChannelsInput)
+                const listChannelResponse = await client.send(listChannelCommand).then(async function(result) {
+                  console.log("channel result")
+                  console.log(result)  
+                })
 
-    cognitoSP.adminInitiateAuth(initiateAuthParams, (authErr, authData) => {
+    try {
+            await cognitoSP.adminInitiateAuth(initiateAuthParams, async function(authErr, authData) {
 
-        console.log("the result is ")
-        console.log(authData["AuthenticationResult"]["IdToken"])
+            if (authErr) {
+                console.log(authErr, authErr.stack)
+            } else {
 
-        const client = new IvsClient(config);
+                console.log("the result is ")
+                console.log(authData["AuthenticationResult"]["IdToken"])
 
-        const appSyncClient = new AWSAppSyncClient({
-            disableOffline: true,
-            url: GRAPHQL_ENDPOINT,
-            region: 'us-west-2',
-            auth: {
-                type: "AMAZON_COGNITO_USER_POOLS",
-                jwtToken: authData["AuthenticationResult"]["IdToken"]
-            }
-        })
+                
 
-        const listChannelsInput = {}
-        const listChannelCommand = new ListChannelsCommand(listChannelsInput)
-        const listChannelResponse = client.send(listChannelCommand).then(function(result) {
-            //var listChannelResponseObject = JSON.parse(listChannelResponse)  
-            //console.log("abc")
-            //console.log(result)
+                const appSyncClient = await new AWSAppSyncClient({
+                    disableOffline: true,
+                    url: GRAPHQL_ENDPOINT,
+                    region: 'us-west-2',
+                    auth: {
+                        type: "AMAZON_COGNITO_USER_POOLS",
+                        jwtToken: authData["AuthenticationResult"]["IdToken"]
+                    }
+                })
 
-            result["channels"].forEach(async function(channel) {
-                var arn = channel["arn"]
+                const listChannelsInput = {}
+                const listChannelCommand = await new ListChannelsCommand(listChannelsInput)
+                const listChannelResponse = await client.send(listChannelCommand).then(async function(result) {
+                    //var listChannelResponseObject = JSON.parse(listChannelResponse)  
+                    //console.log("abc")
+                    //console.log(result)
 
-                const params = {
-                    channelArn: arn
-                };
+                    result["channels"].forEach(async function(channel) {
+                        var arn = channel["arn"]
 
-                //console.log(arn)
-
-                const command = new GetStreamCommand(params);
-
-                var viewerCount = -1
-
-                try {
-                    const streamResponse = await client.send(command);
-                    //viewerCount = streamResponse["stream"]["viewerCount"]
-                } catch (e) {
-                    //console.log(e)
-                }
-
-                console.log(arn + " " + viewerCount)
-
-
-                try {
-
-                    await appSyncClient.hydrated();
-                    const getViewerCountsRequest = await appSyncClient.query({
-                        query: getViewerCounts,
-                        fetchPolicy: 'no-cache',
-                        variables: {
+                        const params = {
                             channelArn: arn
+                        };
+
+                        console.log(arn)
+
+                        const command = new GetStreamCommand(params);
+
+                        var viewerCount = -1
+
+                        try {
+                            const streamResponse = await client.send(command);
+                            //viewerCount = streamResponse["stream"]["viewerCount"]
+                        } catch (e) {
+                            //console.log(e)
                         }
+
+                        console.log(arn + " " + viewerCount)
+
+
+                        try {
+
+                            console.log("hydrating the appclient")
+
+                            await appSyncClient.hydrated();
+                            const getViewerCountsRequest = await appSyncClient.query({
+                                query: getViewerCounts,
+                                fetchPolicy: 'no-cache',
+                                variables: {
+                                    channelArn: arn
+                                }
+                            })
+
+                            console.log(getViewerCountsRequest.data.channelByArn.items.length)
+
+
+                            if (getViewerCountsRequest.data.channelByArn.items.length < 1) {
+
+                                console.log("create")
+
+                                console.log(appSyncClient)
+                                await appSyncClient.hydrated();
+                                const createViewerCountRequest = await appSyncClient.mutate({
+                                    mutation: createViewerCount,
+                                    fetchPolicy: 'no-cache',
+                                    variables: {
+                                        input: {
+                                            channelArn: arn,
+                                            viewerCount: viewerCount,
+                                            title: "test-1",
+                                            description: "test-1"
+                                        }
+                                    }
+                                })
+                            } else {
+                                console.log("modify")
+                                console.log(getViewerCountsRequest.data.channelByArn.items[0].id)
+                                console.log(getViewerCountsRequest.data.channelByArn.items)
+
+                                const modifyViewerCountRequest = await appSyncClient.mutate({
+                                    mutation: updateViewerCount,
+                                    fetchPolicy: 'no-cache',
+                                    variables: {
+                                        input: {
+                                            viewerCount: viewerCount,
+                                            id: getViewerCountsRequest.data.channelByArn.items[0].id
+                                        }
+                                    }
+                                })
+
+                            }
+
+                        } catch (e) {
+                            console.log(e)
+
+                        }
+
                     })
 
-                    console.log(getViewerCountsRequest.data.channelByArn.items.length)
-
-
-                    if (getViewerCountsRequest.data.channelByArn.items.length < 1) {
-
-                        console.log("create")
-
-                        //console.log(appSyncClient)
-                        await appSyncClient.hydrated();
-                        const createViewerCountRequest = await appSyncClient.mutate({
-                            mutation: createViewerCount,
-                            fetchPolicy: 'no-cache',
-                            variables: {
-                                input: {
-                                    channelArn: arn,
-                                    viewerCount: viewerCount,
-                                    title: "test-1",
-                                    description: "test-1"
-                                }
-                            }
-                        })
-                    } else {
-                      console.log("modify")
-                      console.log(getViewerCountsRequest.data.channelByArn.items[0].id)
-                      console.log(getViewerCountsRequest.data.channelByArn.items)
-                      
-                      const modifyViewerCountRequest = await appSyncClient.mutate({
-                            mutation: updateViewerCount,
-                            fetchPolicy: 'no-cache',
-                            variables: {
-                                input: {
-                                    viewerCount: viewerCount,
-                                    id: getViewerCountsRequest.data.channelByArn.items[0].id
-                                }
-                            }
-                        })
-
-                    }
-
-                } catch (e) {
-                    console.log(e)
-
-                }
-
-            })
-
+                })
+            }
         })
-    })
-
+    } catch (e) {
+        console.log(e)
+    }
 
     const response = {
         statusCode: 200,
@@ -244,20 +240,5 @@ exports.handler = async (event) => {
     };
     return response;
 };
-
-async function getCredentials() {
-    cognitoSP.adminInitiateAuth(initiateAuthParams, (authErr, authData) => {
-        if (authErr) {
-            console.log(authErr)
-            //reject(authErr)
-        } else if (authData === null) {
-            //reject("Auth data is null")
-        } else {
-            console.log("Auth Successful")
-            console.log(authData)
-            return authData
-        }
-    })
-}
 
 exports.handler()
