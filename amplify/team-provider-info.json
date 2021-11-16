@@ -19,6 +19,11 @@
         "channelManager": {
           "deploymentBucketName": "amplify-unicornsport-dev-141151-deployment",
           "s3Key": "amplify-builds/channelManager-6b682f49636133342f78-build.zip"
+        },
+        "viewerCount": {
+          "pushVersion": "3",
+          "deploymentBucketName": "amplify-unicornsport-dev-141151-deployment",
+          "s3Key": "amplify-builds/viewerCount-77396a3535316d527658-build.zip"
         }
       }
     }

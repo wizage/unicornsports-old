@@ -10,6 +10,7 @@ type Channel @model
   streamURL: String
   viewerCount: Int
   liveStatus: Boolean
+  id: ID!
 }
 
 type Mutation {

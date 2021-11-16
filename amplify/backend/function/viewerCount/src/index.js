@@ -11,7 +11,6 @@ Amplify Params - DO NOT EDIT */
 //const ivsClient = new AWS.IVS({region: "us-west2"});
 
 //import fetch from 'node-fetch'
-
 const {
     IvsClient,
     GetStreamCommand,
@@ -21,7 +20,7 @@ const {
 const aws = require('aws-sdk')
 const gql = require('graphql-tag');
 const graphql = require('graphql');
-var aws4  = require('aws4')
+var aws4 = require('aws4')
 require('isomorphic-fetch')
 
 
@@ -85,8 +84,12 @@ const CHANNEL_ARN = process.env.CHANNEL_ARN
 const getViewerCounts = gql `
   query channelByArn($channelArn : String!){
     channelByArn(channelArn : $channelArn){
-      channelArn
-      viewerCount
+      items {
+        channelArn
+        id
+        streamURL
+        channelID
+      }
     }
   }
 `
@@ -96,18 +99,19 @@ const createViewerCount = gql`
     createChannel(input: $input) {
       title
       description
-      channelID
-      channelArn
       viewerCount
+      channelArn
+      channelID
     }
   }`
 
 
 const updateViewerCount = gql`
-  mutation updateViewerCount($input: UpdateViewerCountInput!) {
-    updateViewerCount(input: $input) {
-      channelArn
+  mutation updateChannel($input: UpdateChannelInput!) {
+    updateChannel(input: $input) {
       viewerCount
+      channelID
+      id
     }
   }`
 
@@ -116,7 +120,7 @@ const updateViewerCount = gql`
 /* eslint-disable */
 
 exports.handler = async (event) => {
-  
+
     const config = {
         region: "us-west-2"
     }
@@ -128,17 +132,17 @@ exports.handler = async (event) => {
 
         console.log("the result is ")
         console.log(authData["AuthenticationResult"]["IdToken"])
-        
+
         const client = new IvsClient(config);
-        
+
         const appSyncClient = new AWSAppSyncClient({
-          disableOffline: true,
-          url: GRAPHQL_ENDPOINT,
-          region: 'us-west-2',
-          auth:{
-            type: "AMAZON_COGNITO_USER_POOLS",
-            jwtToken: authData["AuthenticationResult"]["IdToken"]
-          }
+            disableOffline: true,
+            url: GRAPHQL_ENDPOINT,
+            region: 'us-west-2',
+            auth: {
+                type: "AMAZON_COGNITO_USER_POOLS",
+                jwtToken: authData["AuthenticationResult"]["IdToken"]
+            }
         })
 
         const listChannelsInput = {}
@@ -147,7 +151,7 @@ exports.handler = async (event) => {
             //var listChannelResponseObject = JSON.parse(listChannelResponse)  
             //console.log("abc")
             //console.log(result)
-            
+
             result["channels"].forEach(async function(channel) {
                 var arn = channel["arn"]
 
@@ -173,18 +177,27 @@ exports.handler = async (event) => {
 
                 try {
 
-                    console.log("create")
-                    /*
-                    const createRecordOptions = {
-                      
-                        url: GRAPHQL_ENDPOINT,
-                        method: 'post',
-                        headers: {
-                            'Authorization': 'token ' + authData["AuthenticationResult"]["AccessToken"]
-                            //'x-api-key': 'da2-jqpczszevbg5bhuqxgxn7nnycy'
-                        },
-                        data: {
-                            query: print(createViewerCount),
+                    await appSyncClient.hydrated();
+                    const getViewerCountsRequest = await appSyncClient.query({
+                        query: getViewerCounts,
+                        fetchPolicy: 'no-cache',
+                        variables: {
+                            channelArn: arn
+                        }
+                    })
+
+                    console.log(getViewerCountsRequest.data.channelByArn.items.length)
+
+
+                    if (getViewerCountsRequest.data.channelByArn.items.length < 1) {
+
+                        console.log("create")
+
+                        //console.log(appSyncClient)
+                        await appSyncClient.hydrated();
+                        const createViewerCountRequest = await appSyncClient.mutate({
+                            mutation: createViewerCount,
+                            fetchPolicy: 'no-cache',
                             variables: {
                                 input: {
                                     channelArn: arn,
@@ -194,37 +207,28 @@ exports.handler = async (event) => {
                                     channelID: 2
                                 }
                             }
-                        }
+                        })
+                    } else {
+                      console.log("modify")
+                      console.log(getViewerCountsRequest.data.channelByArn.items[0].id)
+                      console.log(getViewerCountsRequest.data.channelByArn.items)
                       
-                    } 
-                    
-                    //const signedRecordOptions = aws4.sign(createRecordOptions, authData["AuthenticationResult"]["IdToken"])
-
-                    const createRecord = await axios(createRecordOptions);
-
-                    console.log(createRecord)
-                    */
-                    
-                    console.log(appSyncClient)
-                    await appSyncClient.hydrated();
-                    const createViewerCountRequest = await appSyncClient.mutate({
-                      mutation: createViewerCount,
-                      fetchPolicy: 'no-cache',
-                      variables: {
+                      const modifyViewerCountRequest = await appSyncClient.mutate({
+                            mutation: updateViewerCount,
+                            fetchPolicy: 'no-cache',
+                            variables: {
                                 input: {
-                                    channelArn: arn,
                                     viewerCount: viewerCount,
-                                    title: "test-1",
-                                    description: "test-1",
-                                    channelID: 2
+                                    channelID: getViewerCountsRequest.data.channelByArn.items[0].channelID,
+                                    id: getViewerCountsRequest.data.channelByArn.items[0].id
                                 }
-                      }
-                    })
-                    
-                    console.log(createViewerCountRequest)
+                            }
+                        })
+
+                    }
 
                 } catch (e) {
-                  console.log(e)
+                    console.log(e)
 
                 }
 

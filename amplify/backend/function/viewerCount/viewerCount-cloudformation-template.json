@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Lambda Function resource stack creation using Amplify CLI",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.3.1\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
     "CloudWatchRule": {
       "Type": "String",
@@ -276,11 +276,6 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": "custom-lambda-execution-policy",
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ],
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -303,11 +298,14 @@
               "Effect": "Allow"
             }
           ]
-        }
+        },
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ]
       },
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ]
+      "DependsOn": "LambdaExecutionRole"
     }
   },
   "Outputs": {
