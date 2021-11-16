@@ -10,6 +10,8 @@ export const getChannel = /* GraphQL */ `
       streamKey
       channelArn
       streamURL
+      viewerCount
+      liveStatus
       streamKeyArn
       ingestEndpoint
       createdAt
@@ -32,6 +34,8 @@ export const listChannels = /* GraphQL */ `
         streamKey
         channelArn
         streamURL
+        viewerCount
+        liveStatus
         streamKeyArn
         ingestEndpoint
         createdAt
@@ -64,6 +68,8 @@ export const channelByArn = /* GraphQL */ `
         streamKey
         channelArn
         streamURL
+        viewerCount
+        liveStatus
         streamKeyArn
         ingestEndpoint
         createdAt

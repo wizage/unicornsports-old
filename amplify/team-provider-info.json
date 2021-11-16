@@ -18,12 +18,12 @@
       "function": {
         "channelManager": {
           "deploymentBucketName": "amplify-unicornsport-dev-141151-deployment",
-          "s3Key": "amplify-builds/channelManager-6b682f49636133342f78-build.zip"
+          "s3Key": "amplify-builds/channelManager-50414e314137667a414c-build.zip"
         },
         "viewerCount": {
-          "pushVersion": "3",
           "deploymentBucketName": "amplify-unicornsport-dev-141151-deployment",
-          "s3Key": "amplify-builds/viewerCount-77396a3535316d527658-build.zip"
+          "s3Key": "amplify-builds/viewerCount-685047306f786c5a556d-build.zip",
+          "pushVersion": "4"
         }
       }
     }

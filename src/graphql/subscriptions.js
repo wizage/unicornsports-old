@@ -10,6 +10,8 @@ export const onCreateChannel = /* GraphQL */ `
       streamKey
       channelArn
       streamURL
+      viewerCount
+      liveStatus
       streamKeyArn
       ingestEndpoint
       createdAt
@@ -27,6 +29,8 @@ export const onUpdateChannel = /* GraphQL */ `
       streamKey
       channelArn
       streamURL
+      viewerCount
+      liveStatus
       streamKeyArn
       ingestEndpoint
       createdAt
@@ -44,6 +48,8 @@ export const onDeleteChannel = /* GraphQL */ `
       streamKey
       channelArn
       streamURL
+      viewerCount
+      liveStatus
       streamKeyArn
       ingestEndpoint
       createdAt

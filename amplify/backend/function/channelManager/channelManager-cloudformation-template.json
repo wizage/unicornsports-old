@@ -204,12 +204,7 @@
           }
         ]
       },
-<<<<<<< HEAD
       "DependsOn": "LambdaExecutionRole"
-=======
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ]
     },
     "AmplifyResourcesPolicy": {
       "DependsOn": [
@@ -257,7 +252,6 @@
           ]
         }
       }
->>>>>>> origin/main
     }
   },
   "Outputs": {

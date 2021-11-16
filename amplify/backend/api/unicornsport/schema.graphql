@@ -8,14 +8,10 @@ type Channel @model
   streamKey: String @auth(rules: [{allow: owner}])
   channelArn: String @auth(rules: [{allow: owner}])
   streamURL: String
-<<<<<<< HEAD
   viewerCount: Int
   liveStatus: Boolean
-  id: ID!
-=======
   streamKeyArn: String @auth(rules: [{allow: owner}])
   ingestEndpoint: String @auth(rules: [{allow: owner}])
->>>>>>> origin/main
 }
 
 type Mutation {
