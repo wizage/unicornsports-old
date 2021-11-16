@@ -44,12 +44,12 @@
     }
   },
   "function": {
-    "channelManager": {
+    "viewerCount": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "viewerCount": {
+    "channelManager": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",

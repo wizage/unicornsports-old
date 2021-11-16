@@ -5,12 +5,13 @@ export const getChannel = /* GraphQL */ `
   query GetChannel($id: ID!) {
     getChannel(id: $id) {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner
@@ -26,12 +27,13 @@ export const listChannels = /* GraphQL */ `
     listChannels(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        channelID
         title
         description
         streamKey
         channelArn
         streamURL
+        streamKeyArn
+        ingestEndpoint
         createdAt
         updatedAt
         owner
@@ -57,12 +59,13 @@ export const channelByArn = /* GraphQL */ `
     ) {
       items {
         id
-        channelID
         title
         description
         streamKey
         channelArn
         streamURL
+        streamKeyArn
+        ingestEndpoint
         createdAt
         updatedAt
         owner

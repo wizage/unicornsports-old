@@ -1,16 +1,17 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const rotateStreamKey = /* GraphQL */ `
-  mutation RotateStreamKey($channelID: ID) {
-    rotateStreamKey(channelID: $channelID) {
+export const createStreamKey = /* GraphQL */ `
+  mutation CreateStreamKey($id: ID) {
+    createStreamKey(id: $id) {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner
@@ -24,12 +25,13 @@ export const createChannel = /* GraphQL */ `
   ) {
     createChannel(input: $input, condition: $condition) {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner
@@ -43,12 +45,13 @@ export const updateChannel = /* GraphQL */ `
   ) {
     updateChannel(input: $input, condition: $condition) {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner
@@ -62,12 +65,13 @@ export const deleteChannel = /* GraphQL */ `
   ) {
     deleteChannel(input: $input, condition: $condition) {
       id
-      channelID
       title
       description
       streamKey
       channelArn
       streamURL
+      streamKeyArn
+      ingestEndpoint
       createdAt
       updatedAt
       owner

@@ -1,10 +1,12 @@
 import './index.css';
 import CarouselView from '../CarouselView';
+import NavBar from '../NavBar';
 
 function Home() {
+  
   return (
     <div className="App">
-      Welcome to UnicornSports
+      <NavBar />
       <CarouselView />
     </div>
   );

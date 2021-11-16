@@ -5,20 +5,9 @@
     height: 15rem;
     width: 10rem;
     position: relative;
+    margin-left: 20px;
 }
 
-.artwork{
-    height: 15rem;
-    width: 10rem;
-}
-
-.logo {
-    position: absolute;
-    right: 4px;
-    bottom: 4px;
-    height: 2rem;
-    
-}
 /* On mouse-over, add a deeper shadow 
 .card:hover {
     box-shadow: 0 10px 20px 0 rgba(0,0,0,1);
@@ -32,4 +21,25 @@
     padding: 0px 0px;
     color: #828282;
     font-size: 1rem;
+
+}
+
+.avatarCard {
+    position: absolute;
+    bottom: 2rem;
+    width: 10rem;
+}
+
+.idCard {
+    width: 10rem;
+    bottom: 0px;
+    text-align: center;
+    position: absolute;
+}
+
+.titleCard {
+    width: 10rem;
+    overflow: hidden;
+    padding-top: 10px;
+
 }
