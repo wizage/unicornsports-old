@@ -88,7 +88,6 @@ const getViewerCounts = gql `
         channelArn
         id
         streamURL
-        channelID
       }
     }
   }
@@ -101,7 +100,6 @@ const createViewerCount = gql`
       description
       viewerCount
       channelArn
-      channelID
     }
   }`
 
@@ -110,7 +108,6 @@ const updateViewerCount = gql`
   mutation updateChannel($input: UpdateChannelInput!) {
     updateChannel(input: $input) {
       viewerCount
-      channelID
       id
     }
   }`
@@ -125,8 +122,8 @@ exports.handler = async (event) => {
         region: "us-west-2"
     }
 
-    //console.log(creds)
-    //creds = getCredentials().then(function(result){
+    console.log("in event handler")
+    
 
     cognitoSP.adminInitiateAuth(initiateAuthParams, (authErr, authData) => {
 
@@ -203,8 +200,7 @@ exports.handler = async (event) => {
                                     channelArn: arn,
                                     viewerCount: viewerCount,
                                     title: "test-1",
-                                    description: "test-1",
-                                    channelID: 2
+                                    description: "test-1"
                                 }
                             }
                         })
@@ -219,7 +215,6 @@ exports.handler = async (event) => {
                             variables: {
                                 input: {
                                     viewerCount: viewerCount,
-                                    channelID: getViewerCountsRequest.data.channelByArn.items[0].channelID,
                                     id: getViewerCountsRequest.data.channelByArn.items[0].id
                                 }
                             }
@@ -236,19 +231,6 @@ exports.handler = async (event) => {
 
         })
     })
-
-
-
-
-    /*for(var arn in listChannelResponse["channels"]){
-      console.log(arn[0])  
-    }*/
-
-    //console.log(listChannelResponse["channels"])
-
-    //var arnList = []
-
-    //console.log(listChannelResponse["channels"].length)
 
 
     const response = {
