@@ -10,7 +10,7 @@ type Channel @model
   streamURL: String
   streamKeyArn: String @auth(rules: [{allow: owner}])
   ingestEndpoint: String @auth(rules: [{allow: owner}])
-  tags: String[]
+  tags: [String]
 }
 
 type Mutation {

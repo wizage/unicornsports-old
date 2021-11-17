@@ -12,6 +12,7 @@ export const getChannel = /* GraphQL */ `
       streamURL
       streamKeyArn
       ingestEndpoint
+      tags
       createdAt
       updatedAt
       owner
@@ -34,6 +35,7 @@ export const listChannels = /* GraphQL */ `
         streamURL
         streamKeyArn
         ingestEndpoint
+        tags
         createdAt
         updatedAt
         owner
@@ -66,6 +68,7 @@ export const channelByArn = /* GraphQL */ `
         streamURL
         streamKeyArn
         ingestEndpoint
+        tags
         createdAt
         updatedAt
         owner
