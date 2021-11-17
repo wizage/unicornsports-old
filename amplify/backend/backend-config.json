@@ -38,7 +38,16 @@
               "userPoolId": "authunicornsport71d9c251"
             }
           },
-          "additionalAuthenticationProviders": []
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "API_KEY",
+              "apiKeyConfig": {
+                "apiKeyExpirationDays": 365,
+                "apiKeyExpirationDate": "2022-11-16T20:56:43.434Z",
+                "description": "lambdaAccess"
+              }
+            }
+          ]
         }
       }
     }

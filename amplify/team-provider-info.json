@@ -22,7 +22,7 @@
         },
         "viewerCount": {
           "deploymentBucketName": "amplify-unicornsport-dev-141151-deployment",
-          "s3Key": "amplify-builds/viewerCount-6576486c345332447655-build.zip",
+          "s3Key": "amplify-builds/viewerCount-4874412f52714a565150-build.zip",
           "pushVersion": "5"
         }
       }
