@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Redirect } from 'react-router-dom';
 import { AuthState } from '@aws-amplify/ui-components';
-import Home from '../home';
+import Home from '../Home';
 import Channel from '../Channel';
 import ChannelAdmin from '../Admin';
 import Login from '../Login';
