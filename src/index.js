@@ -5,9 +5,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import 'rsuite/dist/rsuite.min.css';
 import Routing from './components/Router';
-import awsconfig from './aws-exports';
-
-Amplify.configure(awsconfig);
+/* Location 1 */
 
 ReactDOM.render(
   <Routing />,

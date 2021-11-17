@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { AuthState } from '@aws-amplify/ui-components';
 import Home from '../home';
 import Channel from '../channel';
-import ChannelAdmin from '../admin';
+import ChannelAdmin from '../Admin';
 import Login from '../Login';
 
 const Routing = () => {
