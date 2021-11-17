@@ -4,12 +4,11 @@ import { Link } from 'react-router-dom';
 import './index.css';
 import GridCardView from '../GridCardView';
 import SlideButton from '../SlideButtons';
-// <<Location9
 import {
   API, graphqlOperation,
 } from 'aws-amplify';
-import { listChannels } from '../../graphql/queries'
-// Location9>>
+
+/* Location 9 */
 
 class CarouselView extends Component {
   constructor(props) {
@@ -35,18 +34,7 @@ class CarouselView extends Component {
   componentDidMount() {
     const { width } = this.useSizeElement();
     const input = {};
-    API.graphql(graphqlOperation(publicListChannel, input)).then((results) => {
-      console.log("We still write to state");
-      let slideDistance = 0;
-      if (width > 300 && results.data.listChannels.items.length < 5) {
-        slideDistance = 300;
-      }
-      this.setState({ items: results.data.listChannels.items, width, slideDistance});
-    }).catch((e) => {
-      console.log(e);
-    }).finally((data) => {
-      console.log(data);
-    });
+    /* Location 10 */
   }
 
   useSizeElement = () => {
@@ -78,10 +66,6 @@ class CarouselView extends Component {
     if (newActive < currentCount - totalInView) {
       this.setLocation(newActive);
     }
-  }
-
-  displayMovie = (itemId) => {
-    //Handle Click
   }
 
   drawTitle = () => {
@@ -125,25 +109,3 @@ class CarouselView extends Component {
 }
 
 export default CarouselView;
-
-
-const publicListChannel = /* GraphQL */ `
-  query ListChannels(
-    $filter: ModelChannelFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listChannels(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        title
-        description
-        streamURL
-        createdAt
-        updatedAt
-        owner
-      }
-      nextToken
-    }
-  }
-`;
