@@ -6,8 +6,9 @@ import { FlexboxGrid, Avatar, Tag, TagGroup } from 'rsuite';
 
 import Video from '../Video';
 import NavBar from '../NavBar';
-import { getChannel } from '../../graphql/queries';
 import './index.css';
+
+/* Location 8 */
 
 class Channel extends Component {
 
@@ -15,6 +16,7 @@ class Channel extends Component {
         super(props);
         this.state = {
             item: {
+                tags:[]
             }
         };
       }
@@ -24,12 +26,7 @@ class Channel extends Component {
         const input = {
             id: name,
         };
-
-        API.graphql(graphqlOperation( getPublicChannel, input)).then((results) => {
-            this.setState({ item: results.data.getChannel } );
-        }).catch((e) => {
-            console.log("Can't find channel");
-        });
+        /* Location 8 */
     }
 
     tags = () => {
@@ -114,18 +111,3 @@ class Channel extends Component {
 
 
 export default Channel;
-
-
-const getPublicChannel = /* GraphQL */ `
-  query GetChannel($id: ID!) {
-    getChannel(id: $id) {
-      id
-      title
-      description
-      streamURL
-      createdAt
-      updatedAt
-      owner
-    }
-  }
-`;
