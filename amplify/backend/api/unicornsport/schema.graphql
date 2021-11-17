@@ -1,6 +1,6 @@
 type Channel @model 
 @auth(rules: [
-{ allow: owner, operations: [create, delete, update] },
+{ allow: owner, operations: [create, delete, update, read] },
 { allow: public, provider: apiKey }
 ])
 @key(name: "channelsByArn", fields: ["channelArn"], queryField: "channelByArn")

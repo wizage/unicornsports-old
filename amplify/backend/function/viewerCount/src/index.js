@@ -14,7 +14,8 @@ Amplify Params - DO NOT EDIT */
 const {
     IvsClient,
     GetStreamCommand,
-    ListChannelsCommand
+    ListChannelsCommand,
+    ListStreamsCommand
 } = require("@aws-sdk/client-ivs"); // ES Modules import
 
 const aws = require('aws-sdk')
@@ -109,113 +110,112 @@ exports.handler = function(event) {
 
 
 
-    const appSyncClient = new AWSAppSyncClient({
-        disableOffline: true,
-        url: GRAPHQL_ENDPOINT,
-        region: 'us-west-2',
-        auth: {
-            type: "API_KEY",
-            apiKey: 'da2-umt7iqnflfh35mmilgwpa2vitm'
-        }
-    })
 
-    const promises = []
+    cognitoSP.adminInitiateAuth(initiateAuthParams, async function(authErr, authData) {
+        if (authErr) {
+            console.log("Auth err - exiting")
+        } else {
+            console.log("Auth success")
 
-    const listChannelsInput = {}
-    const listChannelCommand = new ListChannelsCommand(listChannelsInput)
-    const listChannelResponse = client.send(listChannelCommand).then(function(result) {
+            const appSyncClient = new AWSAppSyncClient({
+                disableOffline: true,
+                url: GRAPHQL_ENDPOINT,
+                region: 'us-west-2',
+                auth: {
+                    /*type: "API_KEY",
+                    apiKey: 'da2-umt7iqnflfh35mmilgwpa2vitm'*/
 
-        //console.log(result)
-
-        result["channels"].forEach(async function(channel) {
-            console.log("loop arm")
-            console.log(channel["arn"])
-            arn = channel["arn"]
-
-            const params = {
-                channelArn: arn
-            };
-
-
-            var viewerCount = -1
-            const command = new GetStreamCommand(params)
-
-            const streamResponse = client.send(command).then(function(streamResult) {
-                console.log("success arn")
-                console.log(streamResult)
-                processStream(appSyncClient, streamResult.stream.channelArn, streamResult.stream.viewerCount)
-            }, function(streamResultError) {
-                //processStream(appSyncClient, arn, -1)
-                console.log("error arn")
-                console.log(streamResultError.$metadata)
+                    type: "AMAZON_COGNITO_USER_POOLS",
+                    jwtToken: authData["AuthenticationResult"]["IdToken"]
+                }
             })
-        })
+
+            const listStreamsInput = {}
+            const listStreamsCommand = new ListStreamsCommand(listStreamsInput)
+            const listStreamsResponse = client.send(listStreamsCommand).then(function(result) {
+
+                console.log(result)
+
+                result["streams"].forEach(async function(stream) {
+                    console.log("loop arm")
+                    console.log(stream["channelArn"])
+                    arn = stream["channelArn"]
+
+                    processStream(appSyncClient, stream.channelArn, stream.viewerCount)
+
+
+                })
+            })
+
+            const response = {
+                statusCode: 200,
+                //  Uncomment below to enable CORS requests
+                //  headers: {
+                //      "Access-Control-Allow-Origin": "*",
+                //      "Access-Control-Allow-Headers": "*"
+                //  }, 
+                body: JSON.stringify('Hello from Lambda!'),
+            };
+            return response;
+        }
+
     })
 
-    const response = {
-        statusCode: 200,
-        //  Uncomment below to enable CORS requests
-        //  headers: {
-        //      "Access-Control-Allow-Origin": "*",
-        //      "Access-Control-Allow-Headers": "*"
-        //  }, 
-        body: JSON.stringify('Hello from Lambda!'),
-    };
-    return response;
+
 };
 
 function processStream(appSyncClient, arn, viewerCount) {
     {
-                console.log("arn in processSteam")
-                console.log(arn)
+        console.log("arn in processSteam")
+        console.log(arn)
 
+        appSyncClient.hydrated();
+        const getViewerCountsRequest = appSyncClient.query({
+            query: getViewerCounts,
+            fetchPolicy: 'no-cache',
+            variables: {
+                channelArn: arn
+            }
+        }).then(function(result) {
+            //console.log("query result")
+            //console.log(result.data.channelByArn.items)
+
+            if (result.data.channelByArn.items.length < 1) {
+                console.log("create")
+
+                //console.log(appSyncClient)
                 appSyncClient.hydrated();
-                const getViewerCountsRequest = appSyncClient.query({
-                    query: getViewerCounts,
+                const createViewerCountRequest = appSyncClient.mutate({
+                    mutation: createViewerCount,
                     fetchPolicy: 'no-cache',
                     variables: {
-                        channelArn: arn
-                    }
-                }).then(function(result) {
-                    //console.log("query result")
-                    //console.log(result.data.channelByArn.items)
-
-                    if (result.data.channelByArn.items.length < 1) {
-                        console.log("create")
-
-                        //console.log(appSyncClient)
-                        appSyncClient.hydrated();
-                        const createViewerCountRequest = appSyncClient.mutate({
-                            mutation: createViewerCount,
-                            fetchPolicy: 'no-cache',
-                            variables: {
-                                input: {
-                                    channelArn: arn,
-                                    viewerCount: viewerCount,
-                                    title: "test-1",
-                                    description: "test-1"
-                                }
-                            }
-                        })
-                    } else {
-                        //console.log("modify")
-                        //console.log(result.data.channelByArn.items[0].id)
-                        //console.log(result.data.channelByArn.items)
-
-                        const modifyViewerCountRequest = appSyncClient.mutate({
-                            mutation: updateViewerCount,
-                            fetchPolicy: 'no-cache',
-                            variables: {
-                                input: {
-                                    viewerCount: viewerCount,
-                                    id: result.data.channelByArn.items[0].id
-                                }
-                            }
-                        })
-
+                        input: {
+                            channelArn: arn,
+                            viewerCount: viewerCount,
+                            title: "test-1",
+                            description: "test-1"
+                        }
                     }
                 })
+            } else {
+                console.log("modify")
+                console.log(result.data.channelByArn.items[0].id)
+                console.log(result.data.channelByArn.items)
+
+                const modifyViewerCountRequest = appSyncClient.mutate({
+                    mutation: updateViewerCount,
+                    fetchPolicy: 'no-cache',
+                    variables: {
+                        input: {
+                            viewerCount: viewerCount,
+                            id: result.data.channelByArn.items[0].id
+                        }
+                    }
+                })
+
             }
+        })
+    }
 }
 
 exports.handler()
