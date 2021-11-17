@@ -59,7 +59,7 @@ class ChannelAdmin extends Component {
             /* Location 7 */
         } else {
             //Show error 
-            this.displayNotification('error', 'Error', `Please provide a stream title and save it before generating a stream key, ${err.message}`);
+            this.displayNotification('error', 'Error', 'Please provide a stream title and save it before generating a stream key');
         }
     }
     
