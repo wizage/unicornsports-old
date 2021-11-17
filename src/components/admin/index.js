@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
     API, graphqlOperation, Auth
   } from 'aws-amplify';
-import { Form, TagInput, InputGroup, ButtonToolbar, Button } from 'rsuite';
+import { Form, TagInput, InputGroup, ButtonToolbar, Button, toaster, Notification } from 'rsuite';
 import ReloadIcon from '@rsuite/icons/Reload';
 import { createChannel, updateChannel, createStreamKey } from '../../graphql/mutations';
 import NavBar from '../NavBar';
@@ -24,19 +24,10 @@ class ChannelAdmin extends Component {
         const input = {
             id: name,
         };
+        /* Location 4 */
 
-        Auth.currentAuthenticatedUser().then((userInfo) => {
-            this.setState({user: userInfo});
-        });
-        try {
-            API.graphql(graphqlOperation( getChannel, input)).then((results) => {
-                if(results.data.getChannel) {
-                    this.setState({ item: results.data.getChannel, newChannel: false });
-                }
-            });
-        } catch (e) {
-            console.log("Channel can't be found");
-        }
+        /* Location 5 */
+        
     }
 
     setFormValue = (formValue) => {
@@ -45,53 +36,30 @@ class ChannelAdmin extends Component {
         });
     }
 
+    displayNotification = (type, header, text) => {
+        toaster.push(<Notification type={type} header={header}>{text}</Notification>, {
+            placement:'topStart',
+        });
+        setTimeout(function () {
+            toaster.clear();
+        }, 5000);
+    }
+
     submit = async (valid) => {
         const { item, user, newChannel } = this.state;
         console.log(item);
         if (valid){
-            const channelInput = {
-                id: user.username,
-                title: item.title,
-                description: item.description,
-            };
-            try {
-                if (newChannel) {
-                    await API.graphql(graphqlOperation(createChannel, {input: channelInput}));
-                    this.setState({newChannel: false});
-                    console.log('Create new channel');
-                } else {
-                    await API.graphql(graphqlOperation(updateChannel, {input: channelInput}));
-                    this.setState({newChannel: false});
-                    console.log('Updating new channel');
-                }
-                
-            } catch (err){
-                if(err.errors[0].errorType === 'DynamoDB:ConditionalCheckFailedException'){
-                    
-                } else {
-                    
-                }
-            }
+            /* Location 6 */
         }
     }
 
     generateKey = async () => {
         const { newChannel, user } = this.state;
         if (!newChannel) {
-            try {
-                API.graphql(graphqlOperation(createStreamKey, {id: user.username})).then((results) => {
-                    console.log('Create stream key');
-                    this.setState({item: results.data.createStreamKey});
-                });
-            } catch (err){
-                if(err.errors[0].errorType === 'DynamoDB:ConditionalCheckFailedException'){
-                    
-                } else {
-                    
-                }
-            }
+            /* Location 7 */
         } else {
             //Show error 
+            this.displayNotification('error', 'Error', `Please provide a stream title and save it before generating a stream key, ${err.message}`);
         }
     }
     
