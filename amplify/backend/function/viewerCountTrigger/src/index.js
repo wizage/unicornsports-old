@@ -52,6 +52,11 @@ exports.handler = (event) => {
       }
     */
     ruleArn = ""
+    
+    console.log(event.detail.channel_name)
+    console.log(event.detail.event_name)
+
+    if(event.detail.channel_name == process.env.CHANNEL_NAME){
 
     if (event.detail.event_name == "Stream Start") {
 
@@ -85,8 +90,6 @@ exports.handler = (event) => {
             putTargetResponse = client.send(putTargetCommand).then(function(targetResult) {
                 console.log(targetResult)
             })
-
-
 
         })
 
@@ -137,13 +140,8 @@ exports.handler = (event) => {
 
     }
 
-
-    const client = new EventBridgeClient({
-        region: "us-west-2"
-    });
-
-
-
+    }
+    
     console.log(event);
 
 
@@ -170,7 +168,7 @@ exports.handler({
     region: 'us-west-2',
     resources: ['arn:aws:ivs:us-west-2:093612047732:channel/8cuAovVoLwT4'],
     detail: {
-        event_name: 'Stream End',
+        event_name: 'Stream Start',
         channel_name: 'shams1',
         stream_id: 'st-1Gjd0CTQt8zpoekwE7RwpPW'
     }

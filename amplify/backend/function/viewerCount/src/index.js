@@ -118,6 +118,7 @@ exports.handler = function(event) {
     cognitoSP.adminInitiateAuth(initiateAuthParams, async function(authErr, authData) {
         if (authErr) {
             console.log("Auth err - exiting")
+            console.log(authErr)
         } else {
             console.log("Auth success")
 
