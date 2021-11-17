@@ -1,6 +1,10 @@
 /* Amplify Params - DO NOT EDIT
+	API_UNICORNSPORT_CHANNELTABLE_ARN
+	API_UNICORNSPORT_CHANNELTABLE_NAME
 	API_UNICORNSPORT_GRAPHQLAPIENDPOINTOUTPUT
 	API_UNICORNSPORT_GRAPHQLAPIIDOUTPUT
+	API_UNICORNSPORT_GRAPHQLAPIKEYOUTPUT
+	AUTH_UNICORNSPORT71D9C251_USERPOOLID
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
@@ -10,7 +14,7 @@ Amplify Params - DO NOT EDIT */
 /* eslint-enable */
 //const ivsClient = new AWS.IVS({region: "us-west2"});
 
-//import fetch from 'node-fetch'
+//import fetch from 'node-fetch'--
 const {
     IvsClient,
     GetStreamCommand,
@@ -58,7 +62,7 @@ const initiateAuthParams = {
 
 const GRAPHQL_ENDPOINT = "https://ntqa7znanbdb7fsqa4wzxv2rru.appsync-api.us-west-2.amazonaws.com/graphql"
 const API_KEY = "da2-umt7iqnflfh35mmilgwpa2vitm"
-
+//comment for push-2
 
 const getViewerCounts = gql `
   query channelByArn($channelArn : String!){

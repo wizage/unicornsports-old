@@ -1,10 +1,23 @@
 {
   "permissions": {
+    "auth": {
+      "unicornsport71d9c251": [
+        "read"
+      ]
+    },
     "api": {
       "unicornsport": [
         "Query",
         "Mutation",
         "Subscription"
+      ]
+    },
+    "storage": {
+      "Channel:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
       ]
     }
   },
