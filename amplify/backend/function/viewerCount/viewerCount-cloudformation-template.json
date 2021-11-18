@@ -459,6 +459,15 @@
                 "*"
               ],
               "Effect": "Allow"
+            },
+            {
+              "Action": [
+                "cognito-idp:AdminInitiateAuth"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow"
             }
           ]
         },

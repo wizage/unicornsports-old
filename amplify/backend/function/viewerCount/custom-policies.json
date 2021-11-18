@@ -26,5 +26,11 @@
       "dynamodb:*"
       ],
       "Resource" : ["*"]
+  },
+  {
+    "Action" : [
+      "cognito-idp:AdminInitiateAuth"
+      ],
+  "Resource" : ["*"]
   }
 ]
