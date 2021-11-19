@@ -12,53 +12,19 @@ const {
 
 
 exports.handler = (event, context) => {
-
-
-    /* Sample start event 
     
-    2021-11-17T20:37:17.450Z	adda3d05-9e30-4972-a2d0-aaf66bac9bf9	INFO	{
-  version: '0',
-  id: '91d26b2c-c6f8-5c0a-eeb5-a0bf46c68535',
-  'detail-type': 'IVS Stream State Change',
-  source: 'aws.ivs',
-  account: '093612047732',
-  time: '2021-11-17T20:37:15Z',
-  region: 'us-west-2',
-  resources: [ 'arn:aws:ivs:us-west-2:093612047732:channel/8cuAovVoLwT4' ],
-  detail: {
-    event_name: 'Stream Start',
-    channel_name: 'shams1',
-    stream_id: 'st-1Gjd0CTQt8zpoekwE7RwpPW'
-  }
-}
-
-*/
-
-    /*Sample End event
-
-    17eccde7-a816-40c6-b159-7e637cfa8200	INFO	{
-      version: '0',
-      id: '955502d3-56f3-b763-027f-1ae744d5c001',
-      'detail-type': 'IVS Stream State Change',
-      source: 'aws.ivs',
-      account: '093612047732',
-      time: '2021-11-17T20:37:47Z',
-      region: 'us-west-2',
-      resources: [ 'arn:aws:ivs:us-west-2:093612047732:channel/8cuAovVoLwT4' ],
-      detail: {
-        event_name: 'Stream End',
-        channel_name: 'shams1',
-        stream_id: 'st-1Gjd0CTQt8zpoekwE7RwpPW'
-      }
-    */
-    ruleArn = ""
+    var ruleArn = ""
     
-    console.log(event.detail.channel_name)
-    console.log(event.detail.event_name)
+    console.log(event.Records[0].Sns.Message)
+    
+    var ivsMessage = JSON.parse(event.Records[0].Sns.Message)
+    
+    console.log(ivsMessage.detail)
+    
 
-    if(event.detail.channel_name == process.env.CHANNEL_NAME){
+    if(ivsMessage["detail"]["channel_name"] == process.env.CHANNEL_NAME){
 
-    if (event.detail.event_name == "Stream Start") {
+    if (ivsMessage.detail.event_name == "Stream Start") {
 
         const startTriggerRuleInput = {
             "Description": "rule to start stop viewerCount Execution",
@@ -82,11 +48,11 @@ exports.handler = (event, context) => {
             const lambdaFunctionArn = context.invokedFunctionArn
 
             const awsAccountId = lambdaFunctionArn.split(':')[4]
-            const awsRegion = lambdaFunctionArn.split(':')[2]
+            const awsRegion = lambdaFunctionArn.split(':')[3]
     
             console.log(awsAccountId)
 
-            lambdaTargetInput = {
+            var lambdaTargetInput = {
                 "Targets": [{
                     "Id": "1",
                     /** EDIT here to change the name of your function **/
@@ -95,7 +61,7 @@ exports.handler = (event, context) => {
                 "Rule": "viewerCountTrigger"
             }
             const putTargetCommand = new PutTargetsCommand(lambdaTargetInput)
-            putTargetResponse = client.send(putTargetCommand).then(function(targetResult) {
+            var putTargetResponse = client.send(putTargetCommand).then(function(targetResult) {
                 console.log(targetResult)
             })
 
@@ -104,7 +70,7 @@ exports.handler = (event, context) => {
     }
 
 
-    if (event.detail.event_name == "Stream End") {
+    if (ivsMessage.detail.event_name == "Stream End") {
 
         const client = new EventBridgeClient({
             region: "us-west-2"
@@ -129,7 +95,7 @@ exports.handler = (event, context) => {
                 "Rule": "viewerCountTrigger"
             }
 
-            removeVCTargetCommand = new RemoveTargetsCommand(removeTargetInput)
+            var removeVCTargetCommand = new RemoveTargetsCommand(removeTargetInput)
             client.send(removeVCTargetCommand).then(function(removeTargetResult) {
                 console.log(removeTargetResult)
                 /* now remove the rule */
@@ -166,18 +132,4 @@ exports.handler = (event, context) => {
     return response;
 };
 
-exports.handler({
-    version: '0',
-    id: '955502d3-56f3-b763-027f-1ae744d5c001',
-    'detail-type': 'IVS Stream State Change',
-    source: 'aws.ivs',
-    account: '093612047732',
-    time: '2021-11-17T20:37:47Z',
-    region: 'us-west-2',
-    resources: ['arn:aws:ivs:us-west-2:093612047732:channel/8cuAovVoLwT4'],
-    detail: {
-        event_name: 'Stream Start',
-        channel_name: 'shams1',
-        stream_id: 'st-1Gjd0CTQt8zpoekwE7RwpPW'
-    }
-})
+//exports.handler()
