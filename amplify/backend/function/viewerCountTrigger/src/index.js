@@ -11,7 +11,7 @@ const {
 } = require("@aws-sdk/client-eventbridge");
 
 
-exports.handler = (event) => {
+exports.handler = (event, context) => {
 
 
     /* Sample start event 
@@ -78,11 +78,19 @@ exports.handler = (event) => {
             console.log(result.RuleArn)
 
             ruleArn = result.RuleArn
+            
+            const lambdaFunctionArn = context.invokedFunctionArn
+
+            const awsAccountId = lambdaFunctionArn.split(':')[4]
+            const awsRegion = lambdaFunctionArn.split(':')[2]
+    
+            console.log(awsAccountId)
 
             lambdaTargetInput = {
                 "Targets": [{
                     "Id": "1",
-                    "Arn": "arn:aws:lambda:us-west-2:093612047732:function:viewerCount-dev"
+                    /** EDIT here to change the name of your function **/
+                    "Arn": "arn:aws:lambda:" + awsRegion + ":" + awsAccountId + ":function:viewerCount-dev" 
                 }],
                 "Rule": "viewerCountTrigger"
             }
