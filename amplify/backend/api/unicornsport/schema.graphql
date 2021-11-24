@@ -15,6 +15,7 @@ type Channel @model
   liveStatus: Boolean
   streamKeyArn: String @auth(rules: [{allow: owner}])
   ingestEndpoint: String @auth(rules: [{allow: owner}])
+  tags: [String]
 }
 
 type Mutation {

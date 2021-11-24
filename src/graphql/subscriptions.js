@@ -14,6 +14,7 @@ export const onCreateChannel = /* GraphQL */ `
       liveStatus
       streamKeyArn
       ingestEndpoint
+      tags
       createdAt
       updatedAt
       owner
@@ -33,6 +34,7 @@ export const onUpdateChannel = /* GraphQL */ `
       liveStatus
       streamKeyArn
       ingestEndpoint
+      tags
       createdAt
       updatedAt
       owner
@@ -52,6 +54,7 @@ export const onDeleteChannel = /* GraphQL */ `
       liveStatus
       streamKeyArn
       ingestEndpoint
+      tags
       createdAt
       updatedAt
       owner
