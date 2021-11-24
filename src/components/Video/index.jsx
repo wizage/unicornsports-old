@@ -10,27 +10,7 @@ class Video extends Component {
   
   componentDidMount() {
     const { src, parentCallback } = this.props;
-    window.registerIVSTech(videojs);
-    window.registerIVSQualityPlugin(videojs); // where videojs is the video.js variable
-    this.player = videojs(this.videoNode, this.props);
-    this.player.src(src);
-    this.player.enableIVSQualityPlugin(); // where player is the instance of the videojs player
-    const PlayerState = this.player.getIVSEvents().PlayerState;
-    const PlayerEventType = this.player.getIVSEvents().PlayerEventType;
-    this.player.getIVSPlayer().addEventListener(PlayerEventType.TEXT_METADATA_CUE, (metadata) => {
-      console.log(metadata.text)
-    });
-    this.player.getIVSPlayer().addEventListener(PlayerState.PLAYING, () => {
-      console.log("Player State - PLAYING");
-      setTimeout(() => {
-          console.log(
-              `This stream is ${
-                  this.player.getIVSPlayer().isLiveLowLatency() ? "" : "not "
-              }playing in ultra low latency mode`
-          );
-          console.log(`Stream Latency: ${this.player.getIVSPlayer().getLiveLatency()}s`);
-      }, 5000);
-  });
+    /* Location 11 */
   }
 
   componentWillUnmount() {
